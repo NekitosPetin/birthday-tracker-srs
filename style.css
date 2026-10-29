@@ -80,3 +80,9 @@ li.empty {
 .delete-btn:hover {
   background: #8e0000;
 }
+
+.search {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
