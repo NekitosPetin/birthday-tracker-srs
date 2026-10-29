@@ -1,4 +1,4 @@
-// Трекер дней рождения: добавление человека и список
+// Трекер дней рождения: добавление, список и удаление
 
 let people = [];
 let nextId = 1;
@@ -45,6 +45,21 @@ function addPerson(event) {
   nameInput.focus();
 }
 
+function deletePerson(id) {
+  const person = people.find(function (p) { return p.id === id; });
+  if (!person) {
+    return;
+  }
+
+  // Просим подтверждение перед удалением
+  if (!confirm(`Удалить «${person.name}»?`)) {
+    return;
+  }
+
+  people = people.filter(function (p) { return p.id !== id; });
+  renderList();
+}
+
 function renderList() {
   personList.innerHTML = '';
 
@@ -62,6 +77,14 @@ function renderList() {
     const info = document.createElement('span');
     info.textContent = `${person.name} — ${formatDate(person.birth)}`;
     li.appendChild(info);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = 'Удалить';
+    deleteBtn.addEventListener('click', function () {
+      deletePerson(person.id);
+    });
+    li.appendChild(deleteBtn);
 
     personList.appendChild(li);
   });

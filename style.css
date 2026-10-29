@@ -71,3 +71,12 @@ li.empty {
   color: #777;
   justify-content: center;
 }
+
+.delete-btn {
+  padding: 4px 10px;
+  background: #c62828;
+}
+
+.delete-btn:hover {
+  background: #8e0000;
+}
