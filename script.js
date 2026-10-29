@@ -1,4 +1,4 @@
-// Трекер дней рождения: добавление, список и удаление
+// Трекер дней рождения: добавление, список, удаление и поиск
 
 let people = [];
 let nextId = 1;
@@ -6,6 +6,7 @@ let nextId = 1;
 const form = document.getElementById('personForm');
 const nameInput = document.getElementById('nameInput');
 const birthInput = document.getElementById('birthInput');
+const searchInput = document.getElementById('searchInput');
 const message = document.getElementById('message');
 const personList = document.getElementById('personList');
 
@@ -60,18 +61,33 @@ function deletePerson(id) {
   renderList();
 }
 
+// Возвращает людей, чьё ФИО содержит текст из строки поиска (без учёта регистра)
+function getVisiblePeople() {
+  const query = searchInput.value.trim().toLowerCase();
+  if (query === '') {
+    return people;
+  }
+  return people.filter(function (p) {
+    return p.name.toLowerCase().includes(query);
+  });
+}
+
 function renderList() {
   personList.innerHTML = '';
 
-  if (people.length === 0) {
+  const visible = getVisiblePeople();
+
+  if (visible.length === 0) {
     const empty = document.createElement('li');
     empty.className = 'empty';
-    empty.textContent = 'Список пуст. Добавьте первого человека.';
+    empty.textContent = people.length === 0
+      ? 'Список пуст. Добавьте первого человека.'
+      : 'Ничего не найдено.';
     personList.appendChild(empty);
     return;
   }
 
-  people.forEach(function (person) {
+  visible.forEach(function (person) {
     const li = document.createElement('li');
 
     const info = document.createElement('span');
@@ -91,4 +107,5 @@ function renderList() {
 }
 
 form.addEventListener('submit', addPerson);
+searchInput.addEventListener('input', renderList);
 renderList();
