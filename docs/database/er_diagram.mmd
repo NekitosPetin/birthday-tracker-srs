@@ -1,0 +1,33 @@
+erDiagram
+    direction LR
+    Contacts {
+        INTEGER contact_id PK
+        TEXT full_name
+        TEXT birth_date
+        TEXT created_at
+    }
+    Categories {
+        INTEGER category_id PK
+        TEXT name
+        TEXT description
+    }
+    Contact_Categories {
+        INTEGER contact_id PK, FK
+        INTEGER category_id PK, FK
+    }
+    Gift_Statuses {
+        INTEGER status_id PK
+        TEXT name
+    }
+    Gift_Ideas {
+        INTEGER idea_id PK
+        INTEGER contact_id FK
+        TEXT title
+        TEXT note
+        INTEGER status_id FK
+        TEXT created_at
+    }
+    Categories ||--o{ Contact_Categories : "объединяет людей (1:N)"
+    Contacts ||--o{ Contact_Categories : "входит в категории (1:N)"
+    Contacts ||--o{ Gift_Ideas : "имеет идеи подарков (1:N)"
+    Gift_Statuses ||--o{ Gift_Ideas : "задаёт статус (1:N)"
