@@ -37,3 +37,26 @@
 - [Техническое задание](https://github.com/NekitosPetin/birthday-tracker-srs/wiki/Техническое-задание)
 - [План проекта](https://github.com/NekitosPetin/birthday-tracker-srs/wiki/План-проекта)
 - [Процесс разработки](https://github.com/NekitosPetin/birthday-tracker-srs/wiki/Процесс-разработки)
+
+
+## База данных
+
+Схема данных рассчитана на SQLite и приведена к третьей нормальной форме.
+
+![ER-диаграмма](docs/database/er_diagram.png)
+
+| Файл | Назначение |
+|------|------------|
+| `database/schema.sql` | Создание таблиц, ограничений и индексов |
+| `database/seed_data.sql` | Тестовые данные (вымышленные люди) |
+| `database/normalization.md` | Подробное описание процесса нормализации |
+| `docs/database/er_diagram.png`, `.svg` | ER-диаграмма |
+
+Создать базу и заполнить тестовыми данными:
+
+```bash
+sqlite3 birthday.db < database/schema.sql
+sqlite3 birthday.db < database/seed_data.sql
+```
+
+Подробности: [процесс нормализации](database/normalization.md).
