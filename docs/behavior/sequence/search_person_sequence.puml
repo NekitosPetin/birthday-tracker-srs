@@ -1,0 +1,40 @@
+@startuml
+skinparam shadowing false
+autonumber
+
+actor "Пользователь" as User
+participant "Интерфейс" as UI
+participant "Сервис контактов" as Service
+database "База данных" as DB
+
+User -> UI: Вводит часть имени\nв строку поиска
+activate User
+activate UI
+
+UI -> Service: searchPeople(query)
+activate Service
+
+Service -> DB: SELECT * FROM Contacts
+activate DB
+DB --> Service: people_list
+deactivate DB
+
+alt Запрос пустой
+  Service -> Service: Оставить весь список
+else Запрос не пустой
+  Service -> Service: Оставить людей, чьё ФИО содержит\nзапрос (без учёта регистра)
+end
+
+Service -> Service: calculateAge(birthDate)\nдля каждого человека
+Service --> UI: Список людей с возрастом
+deactivate Service
+
+alt Люди найдены
+  UI --> User: Показать отфильтрованный список
+else Ничего не найдено
+  UI --> User: Показать «Ничего не найдено»
+end
+
+deactivate UI
+deactivate User
+@enduml
