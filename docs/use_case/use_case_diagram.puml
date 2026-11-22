@@ -1,0 +1,48 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor Пользователь as User
+
+rectangle "Трекер дней рождения" {
+  usecase "Добавление человека" as AddPerson
+  usecase "Редактирование записи" as EditPerson
+  usecase "Удаление записи" as DeletePerson
+  usecase "Просмотр списка людей" as ViewPeople
+  usecase "Просмотр ближайших\nдней рождения" as ViewUpcoming
+  usecase "Управление идеями подарков" as ManageGifts
+  usecase "Экспорт в CSV" as ExportCsv
+
+  usecase "Валидация данных" as Validate
+  usecase "Автосохранение изменений" as AutoSave
+  usecase "Расчёт возраста" as CalcAge
+
+  usecase "Поиск по имени" as SearchPerson
+  usecase "Фильтрация по категории" as FilterCategory
+  usecase "Смена статуса подарка" as ChangeGiftStatus
+
+  ' Include: обязательная часть сценария
+  AddPerson ..> Validate : <<include>>
+  EditPerson ..> Validate : <<include>>
+  AddPerson ..> AutoSave : <<include>>
+  EditPerson ..> AutoSave : <<include>>
+  DeletePerson ..> AutoSave : <<include>>
+  ManageGifts ..> AutoSave : <<include>>
+  ViewPeople ..> CalcAge : <<include>>
+  ViewUpcoming ..> CalcAge : <<include>>
+
+  ' Extend: необязательное расширение сценария
+  ViewPeople <.. SearchPerson : <<extend>>
+  ViewPeople <.. FilterCategory : <<extend>>
+  ManageGifts <.. ChangeGiftStatus : <<extend>>
+}
+
+' Связи актора
+User -- AddPerson
+User -- EditPerson
+User -- DeletePerson
+User -- ViewPeople
+User -- ViewUpcoming
+User -- ManageGifts
+User -- ExportCsv
+@enduml
