@@ -1,0 +1,38 @@
+@startuml
+skinparam shadowing false
+autonumber
+
+actor "Пользователь" as User
+participant "Интерфейс" as UI
+participant "Сервис контактов" as Service
+database "База данных" as DB
+
+User -> UI: Нажимает «Удалить»\nу записи
+activate User
+activate UI
+
+UI --> User: Запрос подтверждения\n«Удалить этого человека?»
+
+alt Пользователь подтвердил
+  User -> UI: Подтверждает удаление
+  UI -> Service: deletePerson(contactId)
+  activate Service
+
+  Service -> DB: DELETE FROM Contacts\nWHERE contact_id = ?
+  activate DB
+  DB -> DB: Каскадно удалить идеи подарков\nи связи с категориями
+  DB --> Service: rows_affected
+  deactivate DB
+
+  Service --> UI: Успех
+  deactivate Service
+  UI -> UI: Обновить список
+  UI --> User: Запись исчезла из списка
+else Пользователь отменил
+  User -> UI: Отменяет удаление
+  UI --> User: Список остаётся без изменений
+end
+
+deactivate UI
+deactivate User
+@enduml

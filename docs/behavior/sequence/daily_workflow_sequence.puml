@@ -1,0 +1,83 @@
+@startuml
+skinparam shadowing false
+
+actor "Пользователь" as User
+participant "Интерфейс" as UI
+participant "Сервис контактов" as Service
+participant "Сервис подарков" as GiftService
+database "База данных" as DB
+
+== Открытие приложения ==
+
+User -> UI: Открывает приложение
+activate User
+activate UI
+
+UI -> Service: getUpcomingBirthdays(today)
+activate Service
+Service -> DB: SELECT contact_id, full_name, birth_date\nFROM Contacts
+activate DB
+DB --> Service: people_list
+deactivate DB
+Service -> Service: Рассчитать дни до ближайшего дня рождения\nи возраст на текущий год
+Service -> Service: Отсортировать по ближайшей дате
+Service --> UI: Список с числом дней до события
+deactivate Service
+
+UI -> UI: Выделить дни рождения\nв ближайшие 7 дней
+UI --> User: Показать список, ближайшие сверху
+
+== Подготовка подарка ==
+
+User -> UI: Открывает карточку человека
+UI -> GiftService: getGiftIdeas(contactId)
+activate GiftService
+GiftService -> DB: SELECT идеи и их статусы\nFROM Gift_Ideas JOIN Gift_Statuses
+activate DB
+DB --> GiftService: ideas
+deactivate DB
+GiftService --> UI: Идеи со статусами
+deactivate GiftService
+UI --> User: Показать идеи подарков
+
+loop Пока пользователь добавляет идеи
+  User -> UI: Вводит идею подарка
+  UI -> GiftService: addGiftIdea(contactId, title)
+  activate GiftService
+  GiftService -> DB: INSERT INTO Gift_Ideas\n(contact_id, title)
+  activate DB
+  DB --> GiftService: idea_id (статус «запланирован»)
+  deactivate DB
+  GiftService --> UI: Успех
+  deactivate GiftService
+  UI --> User: Идея появилась в списке
+end
+
+User -> UI: Отмечает подарок «куплен»
+UI -> GiftService: updateGiftStatus(ideaId, "куплен")
+activate GiftService
+GiftService -> DB: UPDATE Gift_Ideas\nSET status_id = id статуса «куплен»\nWHERE idea_id = ?
+activate DB
+DB --> GiftService: rows_affected
+deactivate DB
+GiftService --> UI: Успех
+deactivate GiftService
+UI --> User: Статус подарка обновлён
+
+== Резервная копия ==
+
+User -> UI: Нажимает «Экспорт в CSV»
+UI -> Service: exportToCsv()
+activate Service
+Service -> DB: SELECT full_name, birth_date\nFROM Contacts
+activate DB
+DB --> Service: people_list
+deactivate DB
+Service -> Service: Сформировать CSV\n(UTF-8, колонки «ФИО» и «Дата рождения»)
+Service --> UI: Содержимое файла
+deactivate Service
+UI --> User: Скачать файл contacts.csv
+
+deactivate UI
+deactivate User
+@enduml

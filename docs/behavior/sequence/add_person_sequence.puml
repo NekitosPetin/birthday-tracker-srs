@@ -1,0 +1,37 @@
+@startuml
+skinparam shadowing false
+autonumber
+
+actor "Пользователь" as User
+participant "Интерфейс" as UI
+participant "Сервис контактов" as Service
+database "База данных" as DB
+
+User -> UI: Вводит ФИО и дату рождения
+activate User
+activate UI
+
+UI -> Service: addPerson(fullName, birthDate)
+activate Service
+
+Service -> Service: validate(fullName, birthDate)
+
+alt Данные корректны
+  Service -> DB: INSERT INTO Contacts\n(full_name, birth_date)
+  activate DB
+  DB --> Service: contact_id
+  deactivate DB
+
+  Service --> UI: Успех(contact_id)
+  UI -> UI: Очистить форму
+  UI -> UI: Обновить список
+  UI --> User: Показать нового человека в списке
+else Данные некорректны
+  Service --> UI: Ошибка("Введите ФИО\n(не меньше 2 символов)")
+  UI --> User: Показать сообщение об ошибке
+end
+
+deactivate Service
+deactivate UI
+deactivate User
+@enduml
